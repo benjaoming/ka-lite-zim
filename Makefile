@@ -40,11 +40,11 @@ coverage:
 
 docs:
 	rm -f docs/ka-lite-zim.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ ka-lite-zim
+	# rm -f docs/modules.rst
+	# sphinx-apidoc -o docs/ ka-lite-zim
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	open docs/_build/html/index.html
+	# open docs/_build/html/index.html
 
 release: clean
 	python setup.py sdist upload
