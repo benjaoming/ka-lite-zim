@@ -5,6 +5,9 @@ ka-lite-zim
 .. image:: https://travis-ci.org/benjaoming/ka-lite-zim.png?branch=master
     :target: https://travis-ci.org/benjaoming/ka-lite-zim
 
+.. image:: https://readthedocs.org/projects/ka-lite-zim/badge/?version=latest
+    :target: http://ka-lite-zim.readthedocs.org/en/latest/
+
 
 OpenZIM export command for ka-lite.
 
