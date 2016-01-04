@@ -12,6 +12,14 @@ ka-lite-zim
 OpenZIM export command for ka-lite.
 
 
+Features
+--------
+
+* Exporting the contents of a local `KA Lite <http://learningequality.org/ka-lite/>`_ installation to the `OpenZim <http://openzim.org/>`_
+* Easy to customize since you use KA Lite to select and download videos
+* Creates a .zim file with a single-page webapp containing video player and simple JS-based UI for filtering and searching the videos
+
+
 Use case and contributions
 --------------------------
 
@@ -36,37 +44,4 @@ The export command for KA Lite is the immediate and easiest target. But we hope
 to be able to understand the OpenZIM format well enough to build an import
 command as well such that KA Lite students can interact with the data packaged
 and distributed by zim-packagers.
-
-
-Usage
------
-
-#. Clone from the Git repository::
-    
-    git clone https://github.com/benjaoming/ka-lite-zim.git
-
-#. Make sure that while you're installing you are using the same Python environment (virtualenv?) that you also run KA Lite in.
-
-#. Go to the directory and run the installer::
-
-    cd ka-lite-zim/
-    pip install -e .  # Installs an editable.
-
-#. Make sure you have KA Lite installed and that you have issued ``kalite start`` at least once. Then edit your ``~/.kalite/settings.py` to contain this::
-  
-    from kalite.project.settings.base import *
-    INSTALLED_APPS += ['kalite_zim']
-
-#. Open up KA Lite and make sure that the correct language pack and videos have been downloaded.
-
-#. Now you can run the OpenZim export command like this::
-    
-    kalite manage export2zim --language=en output.zim
-
-Features
---------
-
-* Exporting the contents of a local `KA Lite <http://learningequality.org/ka-lite/>`_ installation to the `OpenZim <http://openzim.org/>`_
-* Easy to customize since you use KA Lite to select and download videos
-* Creates a .zim file with a single-page webapp containing video player and simple JS-based UI for filtering and searching the videos
 

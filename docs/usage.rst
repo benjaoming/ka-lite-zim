@@ -2,6 +2,8 @@
 Usage
 ========
 
-To use ka-lite-zim in a project::
+#. Open up KA Lite and make sure that the correct language pack and videos have been downloaded.
 
-	import ka-lite-zim
+#. Now you can run the OpenZim export command like this::
+    
+    kalite manage export2zim --language=en output.zim

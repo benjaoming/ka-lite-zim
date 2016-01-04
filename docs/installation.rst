@@ -2,12 +2,18 @@
 Installation
 ============
 
-At the command line either via easy_install or pip::
+#. Clone from the Git repository::
+    
+    git clone https://github.com/benjaoming/ka-lite-zim.git
 
-    $ easy_install ka-lite-zim
-    $ pip install ka-lite-zim
+#. Make sure that while you're installing you are using the same Python environment (virtualenv?) that you also run KA Lite in.
 
-Or, if you have virtualenvwrapper installed::
+#. Go to the directory and run the installer::
 
-    $ mkvirtualenv ka-lite-zim
-    $ pip install ka-lite-zim
+    cd ka-lite-zim/
+    pip install -e .  # Installs an editable.
+
+#. Make sure you have KA Lite installed and that you have issued ``kalite start`` at least once. Then edit your ``~/.kalite/settings.py` to contain this::
+  
+    from kalite.project.settings.base import *
+    INSTALLED_APPS += ['kalite_zim']
