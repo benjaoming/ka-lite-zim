@@ -3,6 +3,8 @@
 # C extensions
 *.so
 
+/zimtest
+
 # Packages
 *.egg
 *.egg-info

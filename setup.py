@@ -30,11 +30,15 @@ setup(
     author_email='benjamin@learningequality.org',
     url='https://github.com/benjaoming/ka-lite-zim',
     packages=[
-        'ka-lite-zim',
+        'kalite_zim',
     ],
-    package_dir={'ka-lite-zim': 'ka-lite-zim'},
+    package_dir={'ka-lite-zim': 'kalite_zim'},
     include_package_data=True,
     install_requires=[
+        'ka-lite',
+        'colorlog',
+        'django-compressor',
+        'django-libsass',
     ],
     license='MIT',
     zip_safe=False,

@@ -16,4 +16,8 @@ Installation
 #. Make sure you have KA Lite installed and that you have issued ``kalite start`` at least once. Then edit your ``~/.kalite/settings.py` to contain this::
   
     from kalite.project.settings.base import *
-    INSTALLED_APPS += ['kalite_zim']
+    
+    INSTALLED_APPS += [
+        'kalite_zim',
+        'compressor',
+    ]

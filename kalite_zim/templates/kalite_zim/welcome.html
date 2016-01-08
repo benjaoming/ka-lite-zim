@@ -1,0 +1,87 @@
+{% load i18n compress %}<!DOCTYPE html>
+<html>
+<head>
+  <title>{% trans "Khan Academy videos" %}</title>
+  <meta charset="utf-8">
+  <meta content="utf-8" http-equiv="encoding">
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% compress css %}
+  <link type="text/x-scss" rel="stylesheet" href="/static/bootstrap/_kalite_zim.scss" charset="utf-8">
+  {% endcompress %}
+</head>
+<body>
+
+  <div class="container header">
+    <img src="/static/img/ka_header.png" id="title-img" class="img-responsive" />
+    <ul id="video-items" class="rig grid"></ul>
+  </div>
+
+
+  <div class="container">
+    
+    <div class="row">
+    
+      <div class="col-md-4">
+        <ul class="nav nav-pills nav-stacked" role="tablist" id="maintabs">
+          <li role="presentation" class="active">
+            <a href="#home" aria-controls="home" role="tab" data-toggle="pill">{% trans "Introduction" %}</a>
+          </li>
+          {% for topic in topic_tree.children %}
+            <li role="presentation">
+              <a href="#{{ topic.id }}" aria-controls="{{ topic.id }}" role="tab" data-toggle="pill">{{ topic.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      
+      <div class="col-md-8">
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="home">
+            <div class="row-fluid">
+              <div class="col-md-10 col-md-offset-1">
+                <div class="jumbotron">
+                  <h1 class="page-header">{% trans "What is this?" %}</h1>
+                  <p class="lead">
+                    {% trans "Khan Academy: For free. For everyone. Forever." %}
+                  </p>
+                  <p class="lead">
+                    {% trans "No ads, no subscriptions. We are a not‑for‑profit because we believe in a free, world-class education for anyone, anywhere. " %}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% for topic in topic_tree.children %}
+          <div role="tabpanel" class="tab-pane" id="{{ topic.id }}">
+            <h1 class="page-header">{{ topic.title }}</h1>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+  
+
+  <div class="container footer">
+    <div class="backtotop" onclick="$('html, body').animate({ scrollTop: 0 }, 'slow');">
+      <span style="margin: auto;">{% trans "Back to top" %}</span>
+    </div>
+  </div>
+
+  <script src="/static/js/jquery_1.11.3_jquery.min.js"></script>
+  <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/static/js/video.js"></script>
+  
+  <script type="javascript">
+    $('#maintabs a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+    })  
+  </script>
+  
+</body>
+</html>
