@@ -29,7 +29,7 @@ Installation
         cd ka-lite-zim/
         python setup.py install  # Add sudo in front if KA Lite is installed system-wide
 
-#. Make sure you have KA Lite installed and that you have issued ``kalite start`` at least once. Then edit your ``~/.kalite/settings.py` to contain this::
+#. Make sure you have KA Lite installed and that you have issued ``kalite start`` at least once. Then edit your ``~/.kalite/settings.py`` to contain this::
   
     from kalite.project.settings.base import *
     

@@ -24,4 +24,4 @@ If you have any suggestions or questions about **ka-lite-zim** feel free to emai
 at benjamin@learningequality.org.
 
 If you encounter any errors or problems with **ka-lite-zim**, please let me know!
-Open an Issue at the GitHub http://github.com/benjaoming/ka-lite-zim main repository.
+Open an Issue at the GitHub https://github.com/benjaoming/ka-lite-zim main repository.

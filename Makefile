@@ -44,7 +44,8 @@ docs:
 	# sphinx-apidoc -o docs/ ka-lite-zim
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	# open docs/_build/html/index.html
+	sphinx-build -b linkcheck ./docs _build/
+	sphinx-build -b html ./docs _build/
 
 release: clean
 	python setup.py sdist upload
