@@ -192,10 +192,8 @@ class Command(BaseCommand):
         # 2. Now go through the tree and copy each element into the destination
         # zim file system
 
-        videos_found = 0
 
         def copy_media(node):
-            global videos_found
             if node['kind'] == 'Video':
                 if 'content' not in node:
                     logger.error('No content key for video {}'.format(node['id']))
@@ -218,12 +216,13 @@ class Command(BaseCommand):
                     if os.path.exists(video_file_src):
                         os.link(video_file_src, video_file_dest)
                         os.link(thumb_file_src, thumb_file_dest)
-                        videos_found += 1
-                        logger.info("Videos found: {}".format(videos_found))
+                        copy_media.videos_found += 1
+                        logger.info("Videos found: {}".format(copy_media.videos_found))
                     else:
                         logger.error("File not found: {}".format(video_file_src))
             for child in node.get('children', []):
                 copy_media(child)
+        copy_media.videos_found = 0
 
         logger.info("Hard linking video files from KA Lite...")
         copy_media(topic_tree)

@@ -37,7 +37,7 @@ setup(
     install_requires=[
         'ka-lite',
         'colorlog',
-        'django-compressor',
+        'django-compressor==1.6',
         'django-libsass',
     ],
     license='MIT',
