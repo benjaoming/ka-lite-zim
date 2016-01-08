@@ -3,7 +3,11 @@
 # C extensions
 *.so
 
+# Created during testing
 /zimtest
+
+# Created by compressor
+kalite_zim/static/css/
 
 # Packages
 *.egg
