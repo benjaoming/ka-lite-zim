@@ -35,10 +35,11 @@ setup(
     package_dir={'ka-lite-zim': 'kalite_zim'},
     include_package_data=True,
     install_requires=[
-        'ka-lite',
+        'ka-lite>=0.15,<0.16',
         'colorlog',
         'django-compressor==1.6',
-        'django-libsass',
+        'django-libsass==0.6',
+        'libsass==0.10.0',
     ],
     license='MIT',
     zip_safe=False,

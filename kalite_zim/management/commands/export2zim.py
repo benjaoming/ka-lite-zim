@@ -192,7 +192,6 @@ class Command(BaseCommand):
         # 2. Now go through the tree and copy each element into the destination
         # zim file system
 
-
         def copy_media(node):
             if node['kind'] == 'Video':
                 if 'content' not in node:
