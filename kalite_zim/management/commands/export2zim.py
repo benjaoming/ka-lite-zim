@@ -21,6 +21,8 @@ from kalite.topic_tools import settings as topic_tools_settings, \
 from kalite.settings.base import CONTENT_ROOT
 from kalite import i18n
 
+from kalite_zim.utils import download_video
+
 from fle_utils.general import softload_json
 import shutil
 from django.template.loader import render_to_string
@@ -51,7 +53,6 @@ def compressor_init(input_dir):
 
     settings.COMPRESS_ROOT = input_dir
     settings.COMPRESS_OUTPUT_DIR = ''
-    # settings.COMPRESS_URL = '/static'
 
 
 class Command(BaseCommand):
@@ -90,7 +91,7 @@ class Command(BaseCommand):
             action='store_true',
             dest='download',
             default=False,
-            help='Instead of skipping videos that are not available, download them straight into the Zim archive.'
+            help='Instead of skipping videos that are not available, download them to KA Lite.'
         ),
     )
 
@@ -190,6 +191,8 @@ class Command(BaseCommand):
 
         # 2. Now go through the tree and copy each element into the destination
         # zim file system
+        
+        videos_found = 0
 
         def copy_media(node):
             if node['kind'] == 'Video':
@@ -202,18 +205,26 @@ class Command(BaseCommand):
                     video_file_dest = os.path.join(video_dir, video_file_name)
                     thumb_file_src = os.path.join(CONTENT_ROOT, thumb_file_name)
                     thumb_file_dest = os.path.join(thumbnail_dir, thumb_file_name)
-                    if os.path.isfile(video_file_src):
-                        open(video_file_dest, 'wb').write(open(video_file_src, 'rb').read())
-                        open(thumb_file_dest, 'wb').write(open(thumb_file_src, 'rb').read())
-                        sys.stderr.write(".")
-                        sys.stderr.flush()
+
+                    if options['download'] and not os.path.exists(video_file_src):
+                        logger.info("Video file being downloaded to: {}".format(video_file_src))
+                        download_video(
+                            node['content']['youtube_id'],
+                            node['content']['format'],
+                            CONTENT_ROOT,
+                        )
+
+                    if os.path.exists(video_file_src):
+                        os.link(video_file_src, video_file_dest)
+                        os.link(thumb_file_src, thumb_file_dest)
+                        videos_found += 1
+                        logger.info("Videos found: {}".format(videos_found))
                     else:
-                        sys.stderr.write("\n")
                         logger.error("File not found: {}".format(video_file_src))
             for child in node.get('children', []):
                 copy_media(child)
 
-        logger.info("Copying video files...")
+        logger.info("Hard linking video files from KA Lite...")
         copy_media(topic_tree)
         sys.stderr.write("\n")
         logger.info("Done!")

@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ka-lite-zim'
-copyright = u'2016, Benjamin Bach'
+copyright = u'2016, Benjamin Bach'  # @ReservedAssignment
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -186,21 +186,21 @@ htmlhelp_basename = 'ka-lite-zimdoc'
 # -- Options for LaTeX output --------------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-# 'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    # 'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-# 'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    # 'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-# 'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    # 'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'ka-lite-zim.tex', u'ka-lite-zim Documentation',
-   u'Benjamin Bach', 'manual'),
+    ('index', 'ka-lite-zim.tex', u'ka-lite-zim Documentation',
+     u'Benjamin Bach', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -243,9 +243,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'ka-lite-zim', u'ka-lite-zim Documentation',
-   u'Benjamin Bach', 'ka-lite-zim', 'One line description of project.',
-   'Miscellaneous'),
+    ('index', 'ka-lite-zim', u'ka-lite-zim Documentation',
+     u'Benjamin Bach', 'ka-lite-zim', 'One line description of project.',
+     'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
