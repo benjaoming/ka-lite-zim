@@ -85,6 +85,13 @@ class Command(BaseCommand):
             default=False,
             help='Force clearing temporary fs and output destinations before write'
         ),
+        make_option(
+            '--download', '-d',
+            action='store_true',
+            dest='download',
+            default=False,
+            help='Instead of skipping videos that are not available, download them straight into the Zim archive.'
+        ),
     )
 
     def handle(self, *args, **options):
