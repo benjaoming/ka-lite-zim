@@ -8,6 +8,9 @@ import urllib
 from django.conf import settings
 from fle_utils.videos import get_outside_video_urls
 
+from kalite_zim import __name__ as base_path
+base_path = os.path.abspath(base_path)
+
 
 def download_video(youtube_id, video_format, dest_dir):
     """
@@ -34,7 +37,9 @@ def download_video(youtube_id, video_format, dest_dir):
 
         __, response = urllib.urlretrieve(thumb_url, thumbnail_filename)
         if not response.type.startswith("image"):
-            raise Exception("Thumbnail download failed: {}".format(thumb_url))
+            open(thumbnail_filename, "wb").write(
+                open(os.path.join(base_path, "data", "no_thumb.png"), "rb").read()
+            )
 
     except Exception:
         delete_download_garbage()

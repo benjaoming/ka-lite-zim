@@ -53,6 +53,7 @@ def compressor_init(input_dir):
 
     settings.COMPRESS_ROOT = input_dir
     settings.COMPRESS_OUTPUT_DIR = ''
+    settings.COMPRESS_CSS_FILTERS = []
 
 
 class Command(BaseCommand):
@@ -130,13 +131,6 @@ class Command(BaseCommand):
         base_path = os.path.abspath(base_path)
         data_path = os.path.join(base_path, 'data')
 
-        video_dir = os.path.join(tmp_dir, 'videos')
-        thumbnail_dir = os.path.join(tmp_dir, 'thumbnails')
-
-        for _dir in [video_dir, thumbnail_dir]:
-            if not os.path.exists(_dir):
-                os.makedirs(_dir)
-
         logger.info("Will export videos for language: {}".format(language))
         logger.info("Preparing KA Lite topic tree...")
 
@@ -186,6 +180,11 @@ class Command(BaseCommand):
                 topic["title"] = _(topic.get("title", ""))
                 topic["description"] = _(topic.get("description", "")) if topic.get("description") else ""
 
+            topic["url"] = os.path.join(
+                topic["path"],
+                "index.html"
+            )
+
         # 1. Annotate a topic tree
         annotate_tree(topic_tree)
 
@@ -194,15 +193,18 @@ class Command(BaseCommand):
 
         def copy_media(node):
             if node['kind'] == 'Video':
+                node_dir = os.path.join(tmp_dir, node["path"])
+                if not os.path.exists(node_dir):
+                    os.makedirs(node_dir)
                 if 'content' not in node:
                     logger.error('No content key for video {}'.format(node['id']))
                 else:
                     video_file_name = node['id'] + '.' + node['content']['format']
                     thumb_file_name = node['id'] + '.png'
                     video_file_src = os.path.join(CONTENT_ROOT, video_file_name)
-                    video_file_dest = os.path.join(video_dir, video_file_name)
+                    video_file_dest = os.path.join(node_dir, video_file_name)
                     thumb_file_src = os.path.join(CONTENT_ROOT, thumb_file_name)
-                    thumb_file_dest = os.path.join(thumbnail_dir, thumb_file_name)
+                    thumb_file_dest = os.path.join(node_dir, thumb_file_name)
 
                     if options['download'] and not os.path.exists(video_file_src):
                         logger.info("Video file being downloaded to: {}".format(video_file_src))
@@ -213,8 +215,12 @@ class Command(BaseCommand):
                         )
 
                     if os.path.exists(video_file_src):
-                        os.link(video_file_src, video_file_dest)
-                        os.link(thumb_file_src, thumb_file_dest)
+                        try:
+                            os.link(video_file_src, video_file_dest)
+                            os.link(thumb_file_src, thumb_file_dest)
+                        except OSError:
+                            logger.error("Error linking video: {}".format(video_file_dest))
+                            raise
                         copy_media.videos_found += 1
                         logger.info("Videos found: {}".format(copy_media.videos_found))
                     else:
@@ -222,6 +228,25 @@ class Command(BaseCommand):
             for child in node.get('children', []):
                 copy_media(child)
         copy_media.videos_found = 0
+
+        def render_topic_pages(node):
+
+            node_dir = os.path.join(tmp_dir, node["path"])
+            # Finally, render templates into the destination
+            template_context = {
+                "topic_tree": topic_tree,
+                "topic": node,
+            }
+
+            topic_html = render_to_string("kalite_zim/topic.html", template_context)
+            # Replace absolute references to '/static' with relative
+            topic_html = topic_html.replace("/static", "static")
+
+            open(os.path.join(node_dir, "index.html"), "w").write(topic_html)
+
+            for child in node.get('children', []):
+                copy_media(child)
+                render_topic_pages(child)
 
         logger.info("Hard linking video files from KA Lite...")
         copy_media(topic_tree)
@@ -239,7 +264,12 @@ class Command(BaseCommand):
         welcome_html = render_to_string("kalite_zim/welcome.html", template_context)
         # Replace absolute references to '/static' with relative
         welcome_html = welcome_html.replace("/static", "static")
+
+        # Write the welcome.html file
         open(os.path.join(tmp_dir, 'welcome.html'), 'w').write(welcome_html)
+
+        # Render all topic html files
+        render_topic_pages(topic_tree)
 
         # Copy in static data after it's been handled by django compressor
         # (this happens during template rendering)

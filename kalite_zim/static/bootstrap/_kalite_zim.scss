@@ -1,9 +1,32 @@
+$icon-font-name: "glyphicons-halflings-regular";
+$icon-font-path: "../bootstrap/fonts/bootstrap/";
+
+$brand-primary:         #28323d; // #337ab7 #28323d #465341
+$brand-success:         #5cb85c !default;
+$brand-info:            #5bc0de !default;
+$brand-warning:         #f0ad4e !default;
+$brand-danger:          #d9534f !default;
+
 @import "bootstrap";
 
 .header {
-    background-color: #28323d;
+    background-color: $brand-primary;
     padding: 30px;
-    margin-bottom: 20px;
+}
+
+.main-menu {
+    background-color: darken($brand-primary, 10%);
+    padding: 5px;
+    a {
+        color: #FFF;
+    }
+    .nav-pills li > a:hover {
+        background-color: darken($brand-primary, 5%);
+    }
+}
+
+.contents {
+    margin-top: 30px;
 }
 
 .footer {

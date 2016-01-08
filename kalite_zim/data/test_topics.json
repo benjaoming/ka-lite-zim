@@ -470,6 +470,118 @@
         "description": "All about math",
         "kind": "Topic",
         "slug": "dskdkfs"
+      },
+      {
+        "icon_src":"",
+        "contains":[
+           "Topic",
+           "Video",
+           "Exercise"
+        ],
+        "path":"khan/science/",
+        "id":"science",
+        "hide":false,
+        "title":"Science",
+        "child_data":[],
+        "description": "All about science",
+        "kind": "Topic",
+        "slug": "dskdkfdsfs"
+      },
+      {
+        "icon_src":"",
+        "contains":[
+           "Topic",
+           "Video",
+           "Exercise"
+        ],
+        "path":"khan/ec/",
+        "id":"ec",
+        "hide":false,
+        "title":"Economics and finance",
+        "child_data":[],
+        "description": "All about ec and finance",
+        "kind": "Topic",
+        "slug": "dskdkfdssfs"
+      },
+      {
+        "icon_src":"",
+        "contains":[
+           "Topic",
+           "Video",
+           "Exercise"
+        ],
+        "path":"khan/arts/",
+        "id":"ec",
+        "hide":false,
+        "title":"Arts and humanities",
+        "child_data":[],
+        "description": "All about arts and humanities",
+        "kind": "Topic",
+        "slug": "dskdkfdssfdssdfs"
+      },
+      {
+        "icon_src":"",
+        "contains":[
+           "Topic",
+           "Video",
+           "Exercise"
+        ],
+        "path":"khan/computing/",
+        "id":"ec",
+        "hide":false,
+        "title":"Computing",
+        "child_data":[],
+        "description": "All about computing",
+        "kind": "Topic",
+        "slug": "dskds"
+      },
+      {
+        "icon_src":"",
+        "contains":[
+           "Topic",
+           "Video",
+           "Exercise"
+        ],
+        "path":"khan/test-prep/",
+        "id":"ec",
+        "hide":false,
+        "title":"Test prep",
+        "child_data":[],
+        "description": "All about Test prep",
+        "kind": "Topic",
+        "slug": "dskdkks"
+      },
+      {
+        "icon_src":"",
+        "contains":[
+           "Topic",
+           "Video",
+           "Exercise"
+        ],
+        "path":"khan/partner-content/",
+        "id":"ec",
+        "hide":false,
+        "title":"Partner content",
+        "child_data":[],
+        "description": "All about partner content",
+        "kind": "Topic",
+        "slug": "kkaka"
+      },
+      {
+        "icon_src":"",
+        "contains":[
+           "Topic",
+           "Video",
+           "Exercise"
+        ],
+        "path":"khan/college-adminissions/",
+        "id":"ec",
+        "hide":false,
+        "title":"College adminissions",
+        "child_data":[],
+        "description": "All about College adminissions",
+        "kind": "Topic",
+        "slug": "dakdsakjd"
       }
    ],
    "in_knowledge_map": false,
