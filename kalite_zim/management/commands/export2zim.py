@@ -191,10 +191,11 @@ class Command(BaseCommand):
 
         # 2. Now go through the tree and copy each element into the destination
         # zim file system
-        
+
         videos_found = 0
 
         def copy_media(node):
+            global videos_found
             if node['kind'] == 'Video':
                 if 'content' not in node:
                     logger.error('No content key for video {}'.format(node['id']))
