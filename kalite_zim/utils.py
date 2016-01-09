@@ -53,7 +53,7 @@ def download_video(youtube_id, video_format, dest_dir):
 
         __, response = urllib.urlretrieve(thumb_url, thumbnail_filename)
         if not response.type.startswith("image"):
-            logger.w
+            logger.warning("Thumbnail missing, tried: {}".format(thumb_url))
 
     except Exception:
         delete_download_garbage()
