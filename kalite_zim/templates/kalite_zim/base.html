@@ -6,6 +6,7 @@
   <meta content="utf-8" http-equiv="encoding">
   <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link type="text/css" rel="stylesheet" href="static/video.js/video-js.css" charset="utf-8">
   {% compress css %}
   <link type="text/x-scss" rel="stylesheet" href="/static/bootstrap/_kalite_zim.scss" charset="utf-8">
   {% endcompress %}
@@ -67,7 +68,12 @@
     $('#maintabs a').click(function (e) {
       e.preventDefault()
       $(this).tab('show')
-    })  
+    })
+    
+    function() {
+      $('.menu-stub').slideToggle('fast'); $('.sub-menu').slideToggle('fast');
+    }
+    
   </script>
   
 </body>

@@ -36,19 +36,46 @@
 
 {% endif %}
 
+
+{% if topic.video_url %}
+  <video id="my-video" class="video-js" controls preload="auto" width="640" height="264"
+  poster="MY_VIDEO_POSTER.jpg" data-setup="{'autoplay': true, 'preload': 'true', 'width': 'auto', 'height': 'auto', 'techOrder': ['html5','flash']}" style="width: 100%;">
+    <source src="{{ topic.video_url }}" type='video/{{ topic.content.format }}'>
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a web browser that
+      <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+    </p>
+      {% for language in languages %}
+        <track kind="subtitles" src="subs/subs_{{ language.languageCode }}.vtt" srclang="{{ language.languageCode }}" label="{{ language.languageName }}" />
+      {% endfor %}
+  </video>
+{% endif %}
+
+
+
+
+
+
 {% endblock %}
 
 {% block extra_menus %}
   {% for parent in parents reversed %}
     {% if not forloop.last %}
-    <div class="container menu-{{ parent.depth }} top-menu menu-stub" style="height: 3px;"></div>
+    <div class="container menu-{{ parent.depth }} top-menu menu-stub" style="height: 3px;" onclick="$('.menu-stub').slideToggle('fast'); $('.sub-menu').slideToggle('fast')"></div>
     {% endif %}
-    <div class="container menu-{{ parent.depth }} top-menu {% if not forloop.last %} sub-menu{% endif %}"{% if not forloop.last %} style="display: none"{% endif %}>
+    <div class="container menu-{{ parent.depth }} top-menu {% if not forloop.last %} sub-menu{% endif %}"{% if not forloop.last %} style="display: none"{% endif %} onclick="toggle_menu()">
       <div id="menu-{{ parent.depth }}">
         <ul class="nav nav-pills" id="maintabs">
         {% for child in parent.children %}
           <li{% if child in parents or child.id == topic.id %} class="active"{% endif %}>
-            <a href="{{ child.url }}">{{ child.title }}</a>
+            <a href="{{ child.url }}">
+              {% if child.kind == "Video" %}
+              <span class="glyphicon glyphicon-play-circle"></span>
+              {% else %}
+              <span class="glyphicon glyphicon-briefcase"></span>
+              {% endif %}
+              {{ child.title }}
+            </a>
           </li>
         {% endfor %}
         </ul>
@@ -56,10 +83,19 @@
     </div>
   {% endfor %}
   {% if parents %}
-  <div class="container" style="margin-top: -20px;">
-    <button class="btn btn-info pull-right" onclick="$('.menu-stub').slideToggle('fast'); $('.sub-menu').slideToggle('fast')">
-      <span class="glyphicon glyphicon-th"></span> Show menu
-    </button>
+  <div class="container" style="margin-top: -30px;">
+    <div class="btn-group pull-right menu-toggle">
+      <button type="button" class="btn navbar-toggle2" onclick="$('.menu-stub').slideToggle('fast'); $('.sub-menu').slideToggle('fast')">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <button class="btn" onclick="$('.menu-stub').slideToggle('fast'); $('.sub-menu').slideToggle('fast')">
+        Show menu
+      </button>
+    </div>
+    <div style="clear:both"></div>
   </div>
   {% endif %}
 

@@ -46,6 +46,36 @@ $brand-danger:          #d9534f !default;
     background-color: darken($brand-primary, 23%);    
 }
 
+.menu-toggle
+{
+    .btn {
+        @extend .btn;
+        @extend .btn-info;
+        padding: 5px 10px;
+        font-weight: bold;
+        font-size: 18px;
+        color: #FFF;
+        text-transform: uppercase;
+    }
+    border-radius: 10px;
+    border-width: 4px;
+
+    .navbar-toggle2 {
+        padding: 11px 10px;
+        // Bars
+        .icon-bar {
+          display: block;
+          width: 22px;
+          height: 2px;
+          border-radius: 1px;
+          background-color: #FFF;
+        }
+        .icon-bar + .icon-bar {
+          margin-top: 4px;
+        }
+    }
+}
+
 .contents {
     margin-top: 30px;
 }
@@ -56,3 +86,7 @@ $brand-danger:          #d9534f !default;
     margin-top: 50px;
     padding: 30px;
 }
+
+
+.video-js {padding-top: 56.25%}
+.vjs-fullscreen {padding-top: 0px}

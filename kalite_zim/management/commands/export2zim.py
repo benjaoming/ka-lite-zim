@@ -214,6 +214,14 @@ class Command(BaseCommand):
 
                 if os.path.exists(video_file_src):
                     os.link(video_file_src, video_file_dest)
+                    node["video_url"] = os.path.join(
+                        node["path"],
+                        video_file_name
+                    )
+                    copy_media.videos_found += 1
+                    logger.info("Videos found: {}".format(copy_media.videos_found))
+                    node["content"]["available"] = True
+                    # Handle thumbnail
                     if os.path.exists(thumb_file_src):
                         node["thumbnail_url"] = os.path.join(
                             node["path"],
@@ -222,9 +230,6 @@ class Command(BaseCommand):
                         os.link(thumb_file_src, thumb_file_dest)
                     else:
                         node["thumbnail_url"] = None
-                    copy_media.videos_found += 1
-                    logger.info("Videos found: {}".format(copy_media.videos_found))
-                    node["content"]["available"] = True
                 else:
                     logger.error("File not found: {}".format(video_file_src))
             else:
