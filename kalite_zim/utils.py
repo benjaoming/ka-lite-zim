@@ -52,6 +52,7 @@ def download_video(youtube_id, video_format, dest_dir):
             try:
                 __, response = urllib.urlretrieve(url, video_filename)
             except:
+                delete_download_garbage()
                 retries += 1
                 logger.warning("Retrying {}".format(retries))
                 pass
