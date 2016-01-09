@@ -2,6 +2,11 @@
 Usage
 ========
 
+.. note ::
+    Your system should have ``/usr/bin/ffmpeg`` available to generate thumbnails
+    on the fly. There are several thumbnails missing in the collection so this
+    is recommended.
+
 To see all options, run::
     
     kalite manage help export2zim
