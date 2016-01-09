@@ -258,7 +258,8 @@ class Command(BaseCommand):
                         # Convert to .vtt because this format is understood
                         # by latest video.js and the old ones that read
                         # .srt don't work with newer jquery etc.
-                        if not submarine_parser(subtitle_srt, subtitle_vtt):
+                        submarine_parser(subtitle_srt, subtitle_vtt)
+                        if not os.path.exists(subtitle_vtt):
                             logger.warning("Subtitle not converted: {}".format(subtitle_srt))
                         else:
                             logger.info("Subtitle convert from SRT to VTT: {}".format(subtitle_vtt))
@@ -268,7 +269,8 @@ class Command(BaseCommand):
                             )
 
                 else:
-                    logger.error("File not found: {}".format(video_file_src))
+                    if options['download']:
+                        logger.error("File not found or downloaded: {}".format(video_file_src))
             else:
                 logger.error("Invalid node, kind: {}".format(node.get("kind", None)))
                 # Exercises cannot be displayed

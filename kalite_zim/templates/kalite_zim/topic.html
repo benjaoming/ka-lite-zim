@@ -42,14 +42,14 @@
   {% get_current_language as LANGUAGE_CODE %}
 
   <video id="my-video" class="video-js" controls preload="auto" width="640" height="264"
-  poster="MY_VIDEO_POSTER.jpg" data-setup="{'autoplay': true, 'preload': 'true', 'width': 'auto', 'height': 'auto', 'techOrder': ['html5','flash']}" style="width: 100%;">
+  poster="MY_VIDEO_POSTER.jpg" data-setup='{"autoplay": true, "preload": true, "techOrder": ["html5", "flash"]}' style="width: 100%;">
     <source src="{{ topic.video_url }}" type='video/{{ topic.content.format }}'>
     <p class="vjs-no-js">
       To view this video please enable JavaScript, and consider upgrading to a web browser that
       <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
     </p>
       {% if topic.subtitle_url %}
-        <track kind="subtitles" src="{{ topic.subtitle_url }}" srclang="{{ LANGUAGE_CODE }}" label="{{ LANGUAGE_CODE }}" />
+        <track kind="captions" src="{{ topic.subtitle_url }}" srclang="{{ LANGUAGE_CODE }}" label="{{ LANGUAGE_CODE }}" default="true" />
       {% endif %}
   </video>
 {% endif %}
@@ -102,5 +102,16 @@
   </div>
   {% endif %}
 
+{% endblock %}
+
+{% block js %}
+  {% if topic.video_url %}
+  <script type="javascript">
+    videojs("#my-video", {}, function(){
+      // Player (this) is initialized and ready.
+      $("li .vjs-menu-item").eq(2).trigger('click');
+    });
+  </script>
+  {% endif %}  
 {% endblock %}
 
