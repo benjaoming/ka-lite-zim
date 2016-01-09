@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import json
 import os
+import shutil
 import sys
 import tempfile
 
@@ -12,6 +13,7 @@ from optparse import make_option
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 
 from kalite.topic_tools import settings as topic_tools_settings, \
@@ -22,9 +24,9 @@ from kalite import i18n
 from kalite_zim.utils import download_video, logger
 
 from fle_utils.general import softload_json
-import shutil
-from django.template.loader import render_to_string
 
+from submarine.parser import parser as submarine_parser
+from kalite_zim.anythumbnailer.thumbnail_ import create_thumbnail
 
 def compressor_init(input_dir):
 
@@ -118,6 +120,9 @@ class Command(BaseCommand):
         from kalite_zim import __name__ as base_path
         base_path = os.path.abspath(base_path)
         data_path = os.path.join(base_path, 'data')
+
+        # Where subtitles are found in KA Lite
+        subtitle_src_dir = i18n.get_srt_path(language)
 
         logger.info("Will export videos for language: {}".format(language))
         logger.info("Preparing KA Lite topic tree...")
@@ -221,6 +226,16 @@ class Command(BaseCommand):
                     copy_media.videos_found += 1
                     logger.info("Videos found: {}".format(copy_media.videos_found))
                     node["content"]["available"] = True
+
+                    # Create thumbnail if it wasn't downloaded
+                    if not os.path.exists(thumb_file_src):
+                        fp = create_thumbnail(video_file_src, output_format="png")
+                        if fp is None:
+                            logger.error("Failed to create thumbnail for {}".format(video_file_src))
+                        else:
+                            logger.error("Successfully created thumbnail for {}".format(video_file_src))
+                            file(thumb_file_src, 'wb').write(fp.read())
+
                     # Handle thumbnail
                     if os.path.exists(thumb_file_src):
                         node["thumbnail_url"] = os.path.join(
@@ -230,6 +245,28 @@ class Command(BaseCommand):
                         os.link(thumb_file_src, thumb_file_dest)
                     else:
                         node["thumbnail_url"] = None
+
+                    subtitle_srt = os.path.join(
+                        subtitle_src_dir,
+                        node['id'] + '.srt'
+                    )
+                    if os.path.isfile(subtitle_srt):
+                        subtitle_vtt = os.path.join(
+                            node_dir,
+                            node['id'] + '.vtt'
+                        )
+                        # Convert to .vtt because this format is understood
+                        # by latest video.js and the old ones that read
+                        # .srt don't work with newer jquery etc.
+                        if not submarine_parser(subtitle_srt, subtitle_vtt):
+                            logger.warning("Subtitle not converted: {}".format(subtitle_srt))
+                        else:
+                            logger.info("Subtitle convert from SRT to VTT: {}".format(subtitle_vtt))
+                            node["subtitle_url"] = os.path.join(
+                                node["path"],
+                                node['id'] + '.vtt'
+                            )
+
                 else:
                     logger.error("File not found: {}".format(video_file_src))
             else:

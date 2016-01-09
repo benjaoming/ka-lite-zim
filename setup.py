@@ -40,6 +40,8 @@ setup(
         'django-compressor==1.6',
         'django-libsass==0.6',
         'libsass==0.10.0',
+        'submarine==1.0.5',
+        'chardet',
     ],
     license='MIT',
     zip_safe=False,

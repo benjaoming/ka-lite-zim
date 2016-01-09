@@ -10,7 +10,7 @@ from colorlog import ColoredFormatter
 from django.conf import settings
 from fle_utils.videos import get_outside_video_urls
 
-from kalite_zim import __name__ as base_path
+from . import __name__ as base_path
 
 base_path = os.path.abspath(base_path)
 
@@ -55,6 +55,6 @@ def download_video(youtube_id, video_format, dest_dir):
         if not response.type.startswith("image"):
             logger.warning("Thumbnail missing, tried: {}".format(thumb_url))
 
-    except Exception:
+    except (Exception, KeyboardInterrupt):
         delete_download_garbage()
         raise
