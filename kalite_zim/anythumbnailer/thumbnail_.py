@@ -15,7 +15,7 @@ __all__ = ['create_thumbnail']
 
 def create_thumbnail(source_filename, dimensions=None, **kwargs):
     assert dimensions is None
-    mime_type, encoding = mimetypes.guess_type(source_filename, strict=False)
+    mime_type, _encoding = mimetypes.guess_type(source_filename, strict=False)
     if (mime_type is None) and ('.' in source_filename):
         extension = source_filename.rsplit('.', 1)[-1].lower()
         mime_type = mimetypes_by_extension.get(extension)
@@ -32,7 +32,7 @@ class Thumbnailer(object):
         if hasattr(self, 'executables'):
             executables = self.executables
         else:
-            executables = (self.executable, )
+            executables = (self.executable,)
         for command_path in executables:
             command = command_path.split(' ', 1)[0]
             if not os.path.exists(command):
@@ -63,20 +63,19 @@ class PNMToImage(Thumbnailer):
 # via stdin. pdftoppm 0.24.3 (Fedora 20) works fine though...
 class Poppler(Thumbnailer):
     pdf_to_ppm = '/usr/bin/pdftoppm'
-    executables = (pdf_to_ppm, ) + PNMToImage.executables
+    executables = (pdf_to_ppm,) + PNMToImage.executables
 
     def _args(self, source_filename=None, dimensions=None, page=1):
         assert dimensions is None
         command = (
             self.pdf_to_ppm,
-                '-scale-to', str(2048),
-                '-f', str(page),
-                '-l', str(page),
+            '-scale-to', str(2048),
+            '-f', str(page),
+            '-l', str(page),
         )
         if source_filename is not None:
-            command += (source_filename, )
+            command += (source_filename,)
         return command
-
 
     def thumbnail(self, source_filename_or_fp, dimensions=None, page=1, output_format='jpg'):
         assert dimensions is None
@@ -111,7 +110,7 @@ class FileOutputThumbnailer(Thumbnailer):
         # contains the most interesting data.
         file_paths = []
         for filename in os.listdir(temp_dir):
-            if filename.endswith('.'+output_format):
+            if filename.endswith('.' + output_format):
                 file_paths.append(os.path.join(temp_dir, filename))
         if len(file_paths) == 0:
             return None
@@ -122,7 +121,7 @@ class FileOutputThumbnailer(Thumbnailer):
         assert dimensions is None
         try:
             temp_dir = tempfile.mkdtemp()
-            temp_file = os.path.join(temp_dir, self.output_pattern+output_format)
+            temp_file = os.path.join(temp_dir, self.output_pattern + output_format)
             output_fp = run(self._args(source_filename, temp_file))
             if output_fp is None:
                 return None
@@ -149,18 +148,25 @@ class Unoconv(FileOutputThumbnailer):
             # falling back to a temporary file which (strangely) works.
             # "--stdout" works fine in LibreOffice 4.2
             # '--stdout',
-            '--output='+output_filename,
+            '--output=' + output_filename,
             source_filename,
         )
 
     def thumbnail(self, source_filename, dimensions=None, page=1, output_format='jpg'):
-        pdf_fp = super(Unoconv, self).thumbnail(source_filename, dimensions=dimensions,
-            output_format='pdf')
+        pdf_fp = super(Unoconv, self).thumbnail(
+            source_filename,
+            dimensions=dimensions,
+            output_format='pdf'
+        )
         if pdf_fp is None:
             return None
         pdf_thumbnailer = thumbnailer_for('application/pdf')
-        return pdf_thumbnailer.thumbnail(pdf_fp, dimensions=dimensions,
-            page=page, output_format=output_format)
+        return pdf_thumbnailer.thumbnail(
+            pdf_fp,
+            dimensions=dimensions,
+            page=page,
+            output_format=output_format
+        )
 
 
 class ImageMagick(FileOutputThumbnailer):
@@ -211,20 +217,21 @@ class PS2PDF(Thumbnailer):
         elif output_format == 'pdf':
             return pdf_fp
         pdf_thumbnailer = thumbnailer_for('application/pdf')
-        return pdf_thumbnailer.thumbnail(pdf_fp, dimensions=dimensions,
-            output_format=output_format)
-
-
+        return pdf_thumbnailer.thumbnail(
+            pdf_fp,
+            dimensions=dimensions,
+            output_format=output_format
+        )
 
 thumbnailers = {
     'application/postscript': PS2PDF,
     'application/pdf': Poppler,
 
     # "Office" documents
-    'application/msword': Unoconv, # doc
-    re.compile('^'+re.escape('application/vnd.ms-')): Unoconv, # xls/ppt
-    re.compile('^'+re.escape('application/vnd.openxmlformats-officedocument.')): Unoconv, # docx, pptx, xlsx
-    'application/vnd.ms-excel.sheet.macroEnabled.12': Unoconv, # xlsm: xlsx with macros
+    'application/msword': Unoconv,  # doc
+    re.compile('^' + re.escape('application/vnd.ms-')): Unoconv,  # xls/ppt
+    re.compile('^' + re.escape('application/vnd.openxmlformats-officedocument.')): Unoconv,  # docx, pptx, xlsx
+    'application/vnd.ms-excel.sheet.macroEnabled.12': Unoconv,  # xlsm: xlsx with macros
 
     # specific mime types have precedence over regexes so PNMToImage will be
     # preferred over ImageMagick for pnm files.
@@ -235,7 +242,7 @@ thumbnailers = {
     #    .tga -> image/x-targa
     re.compile('^image/'): ImageMagick,
 
-    re.compile('^video/'): ffmpeg, # videos
+    re.compile('^video/'): ffmpeg,  # videos
     # ogg is a container format both for audio (Ogg Vorbis) and videos (Ogg
     # Theora). Python's mimetypes library does not differentiate between these
     # two so we just try ffmpeg for both. It'll just fail for audio but that
@@ -262,4 +269,3 @@ def thumbnailer_for(mime_type):
     if not thumbnailer().is_available():
         return None
     return thumbnailer()
-

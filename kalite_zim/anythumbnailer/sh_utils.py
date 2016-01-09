@@ -15,7 +15,7 @@ def run(command_args, input_=None):
     if hasattr(input_data, 'read'):
         input_data = input_data.read()
     process = subprocess.Popen(command_args, stdout=subprocess.PIPE, stdin=stdin)
-    stdout_data, stderr_data = process.communicate(input=input_data)
+    stdout_data, _stderr_data = process.communicate(input=input_data)
     if hasattr(input_, 'close'):
         input_.close()
     if process.returncode != 0:
@@ -24,12 +24,12 @@ def run(command_args, input_=None):
 
 def run_pipe(input_=None, *commands):
     if isinstance(input_, (tuple, list)):
-        commands = (input_, ) + commands
+        commands = (input_,) + commands
         input_ = None
     else:
         input_ = input_.read()
     assert len(commands) >= 1
-    
+
     last_output_data = input_
     for command_args in commands:
         last_output_data = run(command_args, last_output_data)
@@ -44,10 +44,9 @@ def pipe_with_input(filename_or_fp, *commands):
         fp = filename_or_fp
     else:
         filename = filename_or_fp
-    
+
     first_command = commands[0]
     if filename:
-        first_command = first_command + (filename, )
+        first_command = first_command + (filename,)
         return run_pipe(first_command, *commands[1:])
     return run_pipe(fp, *commands)
-
