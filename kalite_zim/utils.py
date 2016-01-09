@@ -47,7 +47,14 @@ def download_video(youtube_id, video_format, dest_dir):
             os.unlink(thumbnail_filename)
 
     try:
-        __, response = urllib.urlretrieve(url, video_filename)
+        retries = 0
+        while retries < 5:
+            try:
+                __, response = urllib.urlretrieve(url, video_filename)
+            except:
+                retries += 1
+                logger.warning("Retrying {}".format(retries))
+                pass
         if not response.type.startswith("video"):
             raise Exception("Video download failed: {}".format(url))
 
