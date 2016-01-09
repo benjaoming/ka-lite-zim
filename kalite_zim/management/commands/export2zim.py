@@ -83,6 +83,13 @@ class Command(BaseCommand):
             default=False,
             help='Instead of skipping videos that are not available, download them to KA Lite.'
         ),
+        make_option(
+            '--zimwritefs', '-z',
+            action='store_true',
+            dest='download',
+            default=False,
+            help="Path to zimwriterfs if it's not on the shell path"
+        ),
     )
 
     def handle(self, *args, **options):
