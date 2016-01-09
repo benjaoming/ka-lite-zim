@@ -14,15 +14,36 @@ $brand-danger:          #d9534f !default;
     padding: 30px;
 }
 
-.main-menu {
-    background-color: darken($brand-primary, 10%);
+.top-menu {
     padding: 5px;
-    a {
+    .nav li > a {
         color: #FFF;
+        padding: 4px 8px;
     }
     .nav-pills li > a:hover {
-        background-color: darken($brand-primary, 5%);
+        background-color: darken($brand-primary, 1%);
     }
+    border-top: 1px solid #000;
+}
+
+.menu-0 {
+    background-color: darken($brand-primary, 5%);
+}
+
+.menu-1 {
+    background-color: darken($brand-primary, 9%);    
+}
+.menu-2 {
+    background-color: darken($brand-primary, 12%);    
+}
+.menu-3 {
+    background-color: darken($brand-primary, 15%);    
+}
+.menu-4 {
+    background-color: darken($brand-primary, 19%);    
+}
+.menu-5 {
+    background-color: darken($brand-primary, 23%);    
 }
 
 .contents {
@@ -30,7 +51,7 @@ $brand-danger:          #d9534f !default;
 }
 
 .footer {
-    background-color: #28323d;
+    background-color: darken($brand-primary, 25%);
     color: #FFFFFF;
     margin-top: 50px;
     padding: 30px;

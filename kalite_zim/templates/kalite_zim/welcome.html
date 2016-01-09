@@ -16,3 +16,19 @@
   </div>
 </div>
 {% endblock %}
+
+{% block extra_menus %}
+
+<div class="container menu-0 top-menu">
+  <div id="menu-0">
+    <ul class="nav nav-pills" id="maintabs">
+    {% for child in topic_tree.children %}
+      <li>
+        <a href="{{ child.url }}">{{ child.title }}</a>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+</div>
+
+{% endblock %}

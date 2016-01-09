@@ -119,6 +119,7 @@ class Command(BaseCommand):
 
         if os.path.exists(tmp_dir) and os.listdir(tmp_dir):
             if options['clear']:
+                logger.info("Clearing directory {}".format(tmp_dir))
                 shutil.rmtree(tmp_dir)
             else:
                 raise CommandError(
@@ -155,14 +156,18 @@ class Command(BaseCommand):
         content_json_output = {}
         exercise_json_output = {}
 
-        def annotate_tree(topic, depth=0):
+        def annotate_tree(topic, depth=0, parent=None):
             """
             We need to recurse into the tree in order to annotate elements
             with topic data and exercise data
             """
             children = topic.get('children', [])
+            new_children = []
             for child_topic in children:
-                annotate_tree(child_topic, depth=depth + 1)
+                if child_topic.get("kind") in ("Video", "Topic"):
+                    annotate_tree(child_topic, depth=depth + 1, parent=topic)
+                    new_children.append(child_topic)
+            topic["children"] = new_children
             if topic.get("kind") == "Exercise":
                 topic['exercise'] = exercise_cache.get(topic.get("id"), {})
                 exercise_json_output[topic.get("id")] = topic['exercise']
@@ -180,10 +185,11 @@ class Command(BaseCommand):
                 topic["title"] = _(topic.get("title", ""))
                 topic["description"] = _(topic.get("description", "")) if topic.get("description") else ""
 
-            topic["url"] = os.path.join(
-                topic["path"],
-                "index.html"
-            )
+            topic["url"] = topic["id"] + ".html"
+            topic["parent"] = parent
+            topic["depth"] = depth
+            for key in ("child_data", "keywords", "hide", "contains"):
+                topic.pop(key, None)
 
         # 1. Annotate a topic tree
         annotate_tree(topic_tree)
@@ -192,64 +198,93 @@ class Command(BaseCommand):
         # zim file system
 
         def copy_media(node):
-            if node['kind'] == 'Video':
+            if node['kind'] == 'Topic':
+                # Don't do anything if it's a topic
+                pass
+            elif node['kind'] == 'Exercise':
+                # Exercises cannot be displayed
+                node["content"]["available"] = False
+            elif node['kind'] == 'Video':
+                # Available is False by default until we locate the file
+                node["content"]["available"] = False
                 node_dir = os.path.join(tmp_dir, node["path"])
                 if not os.path.exists(node_dir):
                     os.makedirs(node_dir)
-                if 'content' not in node:
-                    logger.error('No content key for video {}'.format(node['id']))
+                video_file_name = node['id'] + '.' + node['content']['format']
+                thumb_file_name = node['id'] + '.png'
+                video_file_src = os.path.join(CONTENT_ROOT, video_file_name)
+                video_file_dest = os.path.join(node_dir, video_file_name)
+                thumb_file_src = os.path.join(CONTENT_ROOT, thumb_file_name)
+                thumb_file_dest = os.path.join(node_dir, thumb_file_name)
+
+                if options['download'] and not os.path.exists(video_file_src):
+                    logger.info("Video file being downloaded to: {}".format(video_file_src))
+                    download_video(
+                        node['content']['youtube_id'],
+                        node['content']['format'],
+                        CONTENT_ROOT,
+                    )
+
+                if os.path.exists(video_file_src):
+                    os.link(video_file_src, video_file_dest)
+                    os.link(thumb_file_src, thumb_file_dest)
+                    copy_media.videos_found += 1
+                    logger.info("Videos found: {}".format(copy_media.videos_found))
+                    node["thumbnail_url"] = os.path.join(
+                        node["path"],
+                        node['id'] + '.png'
+                    )
+                    node["content"]["available"] = True
                 else:
-                    video_file_name = node['id'] + '.' + node['content']['format']
-                    thumb_file_name = node['id'] + '.png'
-                    video_file_src = os.path.join(CONTENT_ROOT, video_file_name)
-                    video_file_dest = os.path.join(node_dir, video_file_name)
-                    thumb_file_src = os.path.join(CONTENT_ROOT, thumb_file_name)
-                    thumb_file_dest = os.path.join(node_dir, thumb_file_name)
+                    logger.error("File not found: {}".format(video_file_src))
+            else:
+                logger.error("Invalid node, kind: {}".format(node.get("kind", None)))
+                # Exercises cannot be displayed
+                node["content"] = {"available": False}
 
-                    if options['download'] and not os.path.exists(video_file_src):
-                        logger.info("Video file being downloaded to: {}".format(video_file_src))
-                        download_video(
-                            node['content']['youtube_id'],
-                            node['content']['format'],
-                            CONTENT_ROOT,
-                        )
-
-                    if os.path.exists(video_file_src):
-                        try:
-                            os.link(video_file_src, video_file_dest)
-                            os.link(thumb_file_src, thumb_file_dest)
-                        except OSError:
-                            logger.error("Error linking video: {}".format(video_file_dest))
-                            raise
-                        copy_media.videos_found += 1
-                        logger.info("Videos found: {}".format(copy_media.videos_found))
-                    else:
-                        logger.error("File not found: {}".format(video_file_src))
+            new_children = []
             for child in node.get('children', []):
                 copy_media(child)
+                empty_topic = child["kind"] == "Topic" and not child.get("children", [])
+                unavailable_video = child["kind"] == "Video" and not child.get("content", {}).get("available", False)
+                if not (empty_topic or unavailable_video):
+                    new_children.append(child)
+            node['children'] = new_children
         copy_media.videos_found = 0
 
         def render_topic_pages(node):
 
-            node_dir = os.path.join(tmp_dir, node["path"])
+            parents = [node] if node.get("children") else []
+            parent = node["parent"]
+            while parent:
+                parents.append(parent)
+                parent = parent["parent"]
+
             # Finally, render templates into the destination
             template_context = {
                 "topic_tree": topic_tree,
                 "topic": node,
+                "parents": parents
             }
-
-            topic_html = render_to_string("kalite_zim/topic.html", template_context)
+            with i18n.translate_block(language):
+                topic_html = render_to_string("kalite_zim/topic.html", template_context)
             # Replace absolute references to '/static' with relative
             topic_html = topic_html.replace("/static", "static")
 
-            open(os.path.join(node_dir, "index.html"), "w").write(topic_html)
+            dest_html = os.path.join(tmp_dir, node["id"] + ".html")
+            logger.info("Rendering {}".format(dest_html))
+
+            open(dest_html, "w").write(topic_html)
+
+            render_topic_pages.pages_rendered += 1
 
             for child in node.get('children', []):
-                copy_media(child)
                 render_topic_pages(child)
+        render_topic_pages.pages_rendered = 0
 
         logger.info("Hard linking video files from KA Lite...")
         copy_media(topic_tree)
+
         sys.stderr.write("\n")
         logger.info("Done!")
 
@@ -259,9 +294,11 @@ class Command(BaseCommand):
         # Finally, render templates into the destination
         template_context = {
             "topic_tree": topic_tree,
+            "welcome": True,
         }
 
-        welcome_html = render_to_string("kalite_zim/welcome.html", template_context)
+        with i18n.translate_block(language):
+            welcome_html = render_to_string("kalite_zim/welcome.html", template_context)
         # Replace absolute references to '/static' with relative
         welcome_html = welcome_html.replace("/static", "static")
 
@@ -278,6 +315,8 @@ class Command(BaseCommand):
 
         ending = datetime.now()
         duration = int((ending - beginning).total_seconds())
+        logger.info("Total number of videos found: {}".format(copy_media.videos_found))
+        logger.info("Total number of topic pages created: {}".format(render_topic_pages.pages_rendered))
         logger.info(
             "Duration: {h:} hours, {m:} minutes, {s:} seconds".format(
                 h=duration // 3600,

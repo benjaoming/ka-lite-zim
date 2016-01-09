@@ -5,4 +5,61 @@
 
 <h1>{{ topic.title }}</h1>
 
+<p class="lead">{{ topic.description }}</p>
+
+{% if topic.children %}
+  {% for child in topic.children %}
+    {% if forloop.counter0|divisibleby:"4" %}
+      {% if not forloop.first %}</div>{% endif %}
+      <div class="row">
+    {% endif %}
+    <div class="col-md-3">
+      <a href="{{ child.url }}" class="thumbnail">
+        {% if child.thumbnail_url %}
+        <img src="{{ child.thumbnail_url }}" class="img-responsive" />
+        {% else %}
+        <div style="width: 100%; padding: 40px; text-align: center;">
+          <p><span class="glyphicon glyphicon-briefcase" style="font-size: 80px;"></span></p>
+          <p><strong>{{ child.title }}</strong></p>
+        </div>
+        {% endif %}
+      </a>
+    </div>
+  {% endfor %}
+
+
+  {% if topic.children %}
+  </div>
+  {% endif %}
+
+{% endif %}
+
 {% endblock %}
+
+{% block extra_menus %}
+  {% for parent in parents reversed %}
+    {% if not forloop.last %}
+    <div class="container menu-{{ parent.depth }} top-menu menu-stub" style="height: 3px;"></div>
+    {% endif %}
+    <div class="container menu-{{ parent.depth }} top-menu {% if not forloop.last %} sub-menu{% endif %}"{% if not forloop.last %} style="display: none"{% endif %}>
+      <div id="menu-{{ parent.depth }}">
+        <ul class="nav nav-pills" id="maintabs">
+        {% for child in parent.children %}
+          <li{% if child in parents or child.id == topic.id %} class="active"{% endif %}>
+            <a href="{{ child.url }}">{{ child.title }}</a>
+          </li>
+        {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endfor %}
+  {% if parents %}
+  <div class="container" style="margin-top: -20px;">
+    <button class="btn btn-info pull-right" onclick="$('.menu-stub').slideToggle('fast'); $('.sub-menu').slideToggle('fast')">
+      <span class="glyphicon glyphicon-th"></span> Show menu
+    </button>
+  </div>
+  {% endif %}
+
+{% endblock %}
+

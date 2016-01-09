@@ -13,20 +13,11 @@
 <body>
 
   <div class="container header">
-    <img src="/static/img/ka_header.png" id="title-img" class="img-responsive" />
-  </div>
-  
-  <div class="container main-menu">
-    <ul class="nav nav-pills" id="maintabs">
-      <li class="active">
-        <a href="welcome.html">{% trans "Introduction" %}</a>
-      </li>
-      {% for topic in topic_tree.children %}
-        <li>
-          <a href="{{ topic.url }}">{{ topic.title }}</a>
-        </li>
-      {% endfor %}
-    </ul>
+    <div class="row">
+        <div class="col-md-6">
+          <img src="/static/img/ka_header.png" id="title-img" class="img-responsive" />
+        </div>
+    </div>
   </div>
   
   {% block extra_menus %}{% endblock %}
@@ -49,7 +40,11 @@
       <div class="col-md-3">
         <a class="btn btn-default" onclick="$('html, body').animate({ scrollTop: 0 }, 'slow');" href="javascript:void(0)">
           <span class="glyphicon glyphicon-chevron-up"></span>
-          {% trans "Back to top" %}
+          {% trans "Top of page" %}
+        </a>
+        <a class="btn btn-default" href="welcome.html">
+          <span class="glyphicon glyphicon-home"></span>
+          {% trans "To start" %}
         </a>
       </div>
       <div class="col-md-3">

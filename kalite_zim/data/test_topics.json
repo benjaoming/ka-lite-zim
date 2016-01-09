@@ -511,7 +511,7 @@
            "Exercise"
         ],
         "path":"khan/arts/",
-        "id":"ec",
+        "id":"arts",
         "hide":false,
         "title":"Arts and humanities",
         "child_data":[],
@@ -527,7 +527,7 @@
            "Exercise"
         ],
         "path":"khan/computing/",
-        "id":"ec",
+        "id":"computing",
         "hide":false,
         "title":"Computing",
         "child_data":[],
@@ -543,7 +543,7 @@
            "Exercise"
         ],
         "path":"khan/test-prep/",
-        "id":"ec",
+        "id":"test",
         "hide":false,
         "title":"Test prep",
         "child_data":[],
@@ -559,7 +559,7 @@
            "Exercise"
         ],
         "path":"khan/partner-content/",
-        "id":"ec",
+        "id":"partner",
         "hide":false,
         "title":"Partner content",
         "child_data":[],
@@ -575,7 +575,7 @@
            "Exercise"
         ],
         "path":"khan/college-adminissions/",
-        "id":"ec",
+        "id":"college",
         "hide":false,
         "title":"College adminissions",
         "child_data":[],
