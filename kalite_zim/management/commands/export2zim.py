@@ -3,12 +3,10 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import json
-import logging
 import os
 import sys
 import tempfile
 
-from colorlog import ColoredFormatter
 from datetime import datetime
 from optparse import make_option
 
@@ -21,23 +19,12 @@ from kalite.topic_tools import settings as topic_tools_settings, \
 from kalite.settings.base import CONTENT_ROOT
 from kalite import i18n
 
-from kalite_zim.utils import download_video, EMPTY_THUMBNAIL
+from kalite_zim.utils import download_video, logger
 
 from fle_utils.general import softload_json
 import shutil
 from django.template.loader import render_to_string
 
-LOG_LEVEL = logging.DEBUG
-LOGFORMAT = "  %(log_color)s%(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s"
-logging.root.setLevel(LOG_LEVEL)
-formatter = ColoredFormatter(LOGFORMAT)
-stream = logging.StreamHandler()
-stream.setLevel(LOG_LEVEL)
-stream.setFormatter(formatter)
-logger = logging.getLogger(__name__)
-logger.setLevel(LOG_LEVEL)
-logger.addHandler(stream)
-logger.propagate = False
 
 def compressor_init(input_dir):
 

@@ -2,16 +2,31 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import absolute_import
 
+import logging
 import os
 import urllib
 
+from colorlog import ColoredFormatter
 from django.conf import settings
 from fle_utils.videos import get_outside_video_urls
 
 from kalite_zim import __name__ as base_path
+
 base_path = os.path.abspath(base_path)
 
-EMPTY_THUMBNAIL = os.path.join(base_path, "data", "no_thumb.png")
+
+LOG_LEVEL = logging.DEBUG
+LOGFORMAT = "  %(log_color)s%(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s"
+logging.root.setLevel(LOG_LEVEL)
+formatter = ColoredFormatter(LOGFORMAT)
+stream = logging.StreamHandler()
+stream.setLevel(LOG_LEVEL)
+stream.setFormatter(formatter)
+logger = logging.getLogger(__name__)
+logger.setLevel(LOG_LEVEL)
+logger.addHandler(stream)
+logger.propagate = False
+
 
 def download_video(youtube_id, video_format, dest_dir):
     """
@@ -38,9 +53,7 @@ def download_video(youtube_id, video_format, dest_dir):
 
         __, response = urllib.urlretrieve(thumb_url, thumbnail_filename)
         if not response.type.startswith("image"):
-            open(thumbnail_filename, "wb").write(
-                open(EMPTY_THUMBNAIL, "rb").read()
-            )
+            logger.w
 
     except Exception:
         delete_download_garbage()
