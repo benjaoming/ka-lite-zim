@@ -21,7 +21,7 @@ from kalite.topic_tools import settings as topic_tools_settings, \
 from kalite.settings.base import CONTENT_ROOT
 from kalite import i18n
 
-from kalite_zim.utils import download_video
+from kalite_zim.utils import download_video, EMPTY_THUMBNAIL
 
 from fle_utils.general import softload_json
 import shutil
@@ -227,13 +227,16 @@ class Command(BaseCommand):
 
                 if os.path.exists(video_file_src):
                     os.link(video_file_src, video_file_dest)
-                    os.link(thumb_file_src, thumb_file_dest)
+                    if os.path.exists(thumb_file_src):
+                        node["thumbnail_url"] = os.path.join(
+                            node["path"],
+                            node['id'] + '.png'
+                        )
+                        os.link(thumb_file_src, thumb_file_dest)
+                    else:
+                        node["thumbnail_url"] = None
                     copy_media.videos_found += 1
                     logger.info("Videos found: {}".format(copy_media.videos_found))
-                    node["thumbnail_url"] = os.path.join(
-                        node["path"],
-                        node['id'] + '.png'
-                    )
                     node["content"]["available"] = True
                 else:
                     logger.error("File not found: {}".format(video_file_src))

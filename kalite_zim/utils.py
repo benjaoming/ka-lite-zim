@@ -11,6 +11,7 @@ from fle_utils.videos import get_outside_video_urls
 from kalite_zim import __name__ as base_path
 base_path = os.path.abspath(base_path)
 
+EMPTY_THUMBNAIL = os.path.join(base_path, "data", "no_thumb.png")
 
 def download_video(youtube_id, video_format, dest_dir):
     """
@@ -38,7 +39,7 @@ def download_video(youtube_id, video_format, dest_dir):
         __, response = urllib.urlretrieve(thumb_url, thumbnail_filename)
         if not response.type.startswith("image"):
             open(thumbnail_filename, "wb").write(
-                open(os.path.join(base_path, "data", "no_thumb.png"), "rb").read()
+                open(EMPTY_THUMBNAIL, "rb").read()
             )
 
     except Exception:

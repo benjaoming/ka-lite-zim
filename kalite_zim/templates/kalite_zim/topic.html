@@ -14,15 +14,17 @@
       <div class="row">
     {% endif %}
     <div class="col-md-3">
-      <a href="{{ child.url }}" class="thumbnail">
+      <a href="{{ child.url }}" class="thumbnail" style="text-align: center;">
         {% if child.thumbnail_url %}
-        <img src="{{ child.thumbnail_url }}" class="img-responsive" />
+          <img src="{{ child.thumbnail_url }}" class="img-responsive" />
         {% else %}
-        <div style="width: 100%; padding: 40px; text-align: center;">
-          <p><span class="glyphicon glyphicon-briefcase" style="font-size: 80px;"></span></p>
-          <p><strong>{{ child.title }}</strong></p>
+        <div style="width: 100%; padding: 30px 30px 10px 30px;">
+          <p><span class="glyphicon glyphicon-{% if child.kind == "Video" %}play-circle{% else %}briefcase{% endif %}" style="font-size: 80px;"></span></p>
         </div>
         {% endif %}
+        <div class="caption">
+          <p><strong>{{ child.title }}</strong></p>
+        </div>
       </a>
     </div>
   {% endfor %}
