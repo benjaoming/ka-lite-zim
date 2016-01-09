@@ -3,7 +3,7 @@ $icon-font-path: "../bootstrap/fonts/bootstrap/";
 
 $brand-primary:         #28323d; // #337ab7 #28323d #465341
 $brand-success:         #5cb85c !default;
-$brand-info:            #5bc0de !default;
+$brand-info:            #92ae3b !default;
 $brand-warning:         #f0ad4e !default;
 $brand-danger:          #d9534f !default;
 
@@ -19,6 +19,9 @@ $brand-danger:          #d9534f !default;
     .nav li > a {
         color: #FFF;
         padding: 4px 8px;
+    }
+    li.active > a {
+        background-color: lighten($brand-primary, 20%);
     }
     .nav-pills li > a:hover {
         background-color: darken($brand-primary, 1%);
