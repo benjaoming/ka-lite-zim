@@ -39,14 +39,16 @@
   <div class="container footer">
     <div class="row">
       <div class="col-md-3">
-        <a class="btn btn-default" onclick="$('html, body').animate({ scrollTop: 0 }, 'slow');" href="javascript:void(0)">
+        <p>
+          <a class="btn btn-default" onclick="$('html, body').animate({ scrollTop: 0 }, 'slow');" href="javascript:void(0)">
           <span class="glyphicon glyphicon-chevron-up"></span>
           {% trans "Top of page" %}
-        </a>
-        <a class="btn btn-default" href="welcome.html">
-          <span class="glyphicon glyphicon-home"></span>
-          {% trans "To start" %}
-        </a>
+          </a>
+          <a class="btn btn-default" href="welcome.html">
+            <span class="glyphicon glyphicon-home"></span>
+            {% trans "To start" %}
+          </a>
+        </p>
       </div>
       <div class="col-md-3">
         <p>{% trans "Created on" %} {% now "DATE_FORMAT" %}</p>
