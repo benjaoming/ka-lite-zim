@@ -315,7 +315,7 @@ class Command(BaseCommand):
                         if fp is None:
                             logger.error("Failed to create thumbnail for {}".format(video_file_src))
                         else:
-                            logger.error("Successfully created thumbnail for {}".format(video_file_src))
+                            logger.info("Successfully created thumbnail for {}".format(video_file_src))
                             file(thumb_file_src, 'wb').write(fp.read())
 
                     # Handle thumbnail
