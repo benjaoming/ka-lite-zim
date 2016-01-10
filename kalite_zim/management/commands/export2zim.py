@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import json
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 
@@ -27,6 +28,7 @@ from fle_utils.general import softload_json
 
 from submarine.parser import parser as submarine_parser
 from kalite_zim.anythumbnailer.thumbnail_ import create_thumbnail
+from distutils.spawn import find_executable
 
 def compressor_init(input_dir):
 
@@ -84,11 +86,25 @@ class Command(BaseCommand):
             help='Instead of skipping videos that are not available, download them to KA Lite.'
         ),
         make_option(
-            '--zimwritefs', '-z',
-            action='store_true',
-            dest='download',
-            default=False,
+            '--zimwriterfs', '-z',
+            action='store',
+            dest='zimwriterfs',
+            default=None,
             help="Path to zimwriterfs if it's not on the shell path"
+        ),
+        make_option(
+            '--publisher', '-p',
+            action='store',
+            dest='publisher',
+            default="Learning Equality",
+            help="Name of publisher"
+        ),
+        make_option(
+            '--transcode2webm',
+            action='store_true',
+            dest='transcode2webm',
+            default=False,
+            help="Name of publisher"
         ),
     )
 
@@ -96,7 +112,7 @@ class Command(BaseCommand):
         if len(args) != 1:
             raise CommandError("Takes exactly 1 argument")
 
-        dest_file = args[0]
+        dest_file = os.path.abspath(args[0])
 
         logger.info("Starting up KA Lite export2zim command")
         beginning = datetime.now()
@@ -123,6 +139,22 @@ class Command(BaseCommand):
                         tmp_dir
                     )
                 )
+
+        zimwriterfs = options.get("zimwriterfs", None)
+        publisher = options.get("publisher")
+        transcode2webm = options.get("transcode2webm")
+        ffmpeg = find_executable("ffmpeg")
+
+        if not ffmpeg:
+            logger.warning("FFMpeg not found in your path, you won't be able to create missing thumbnails or transcode to webm.")
+
+        if not zimwriterfs:
+            zimwriterfs = find_executable("zimwriterfs")
+            if not zimwriterfs:
+                raise CommandError("Could not find zimwriterfs in your path, try specifying --zimwriterfs=/path")
+
+        if not os.path.exists(zimwriterfs):
+            raise CommandError("Invalid --zimwriterfs")
 
         from kalite_zim import __name__ as base_path
         base_path = os.path.abspath(base_path)
@@ -225,13 +257,56 @@ class Command(BaseCommand):
                     )
 
                 if os.path.exists(video_file_src):
-                    os.link(video_file_src, video_file_dest)
+                    if transcode2webm:
+                        ffmpeg_pass_log = "/tmp/logfile_vp8.fpf"
+                        if os.path.isfile(ffmpeg_pass_log):
+                            os.unlink(ffmpeg_pass_log)
+                        video_file_name = node['id'] + '.webm'
+                        video_file_dest = os.path.join(node_dir, video_file_name)
+                        ffmpeg_base_args = [
+                            ffmpeg,
+                            "-i", video_file_src,
+                            "-codec:v", "libvpx",
+                            "-quality", "best",
+                            "-cpu-used", "0",
+                            "-b:v", "300k",
+                            "-qmin", "30",
+                            "-qmax", "42",
+                            "-maxrate", "300k",
+                            "-bufsize", "1000k",
+                            "-threads", "8",
+                            "-vf", "scale=480:-1",
+                            "-codec:a", "libvorbis",
+                            "-b:a", "128k",
+                            "-f", "webm",
+                        ]
+                        ffmpeg_pass1 = ffmpeg_base_args + [
+                            "-pass", "1",
+                            "-passlogfile", ffmpeg_pass_log,
+                            video_file_dest,
+                        ]
+                        ffmpeg_pass2 = ffmpeg_base_args + [
+                            "-pass", "2",
+                            "-y", "-passlogfile", ffmpeg_pass_log,
+                            video_file_dest,
+                        ]
+                        for cmd in (ffmpeg_pass1, ffmpeg_pass2):
+                            process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                            stdout_data, _stderr_data = process.communicate()
+                            if process.returncode != 0:
+                                logger.error("Error invoking ffmpeg: {}".format((_stderr_data or "") + (stdout_data or "")))
+                                logger.error("Command was: {}".format(" ".join(cmd)))
+                                raise CommandError("Could not complete transcoding")
+                        node['content']['format'] = "webm"
+                    else:
+                        # If not transcoding, just link the original file
+                        os.link(video_file_src, video_file_dest)
                     node["video_url"] = os.path.join(
                         node["path"],
                         video_file_name
                     )
                     copy_media.videos_found += 1
-                    logger.info("Videos found: {}".format(copy_media.videos_found))
+                    logger.info("Videos processed: {}".format(copy_media.videos_found))
                     node["content"]["available"] = True
 
                     # Create thumbnail if it wasn't downloaded
@@ -358,6 +433,28 @@ class Command(BaseCommand):
         duration = int((ending - beginning).total_seconds())
         logger.info("Total number of videos found: {}".format(copy_media.videos_found))
         logger.info("Total number of topic pages created: {}".format(render_topic_pages.pages_rendered))
+
+        logger.info("Invoking zimwriterfs, writing to: {}".format(dest_file))
+
+        zimwriterfs_args = (
+            zimwriterfs,
+            "--welcome", "welcome.html",
+            "--favicon", "static/img/ka_leaf.png",
+            "--publisher", publisher,
+            "--creator", "KhanAcademy.org",
+            "--description", "Khan Academy ({})".format(language),
+            "--description", "Videos from Khan Academy",
+            "--language", language,
+            tmp_dir,
+            dest_file,
+        )
+
+        process = subprocess.Popen(zimwriterfs_args, stdout=subprocess.PIPE)
+        stdout_data, _stderr_data = process.communicate()
+
+        if process.returncode != 0:
+            logger.error("Error invoking zimwriterfs: {}").format(_stderr_data + stdout_data)
+
         logger.info(
             "Duration: {h:} hours, {m:} minutes, {s:} seconds".format(
                 h=duration // 3600,
