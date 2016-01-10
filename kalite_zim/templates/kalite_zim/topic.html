@@ -66,7 +66,7 @@
     {% if not forloop.last %}
     <div class="container menu-{{ parent.depth }} top-menu menu-stub" style="height: 3px;" onclick="$('.menu-stub').slideToggle('fast'); $('.sub-menu').slideToggle('fast')"></div>
     {% endif %}
-    <div class="container menu-{{ parent.depth }} top-menu {% if not forloop.last %} sub-menu{% endif %}"{% if not forloop.last %} style="display: none"{% endif %} onclick="toggle_menu()">
+    <div class="container menu-{{ parent.depth }} top-menu {% if not forloop.last %} sub-menu{% endif %}"{% if not forloop.last %} style="display: none"{% endif %} onclick="$('.menu-stub').slideToggle('fast'); $('.sub-menu').slideToggle('fast')">
       <div id="menu-{{ parent.depth }}">
         <ul class="nav nav-pills" id="maintabs">
         {% for child in parent.children %}
