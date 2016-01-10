@@ -54,8 +54,10 @@ def download_video(youtube_id, video_format, dest_dir):
             except:
                 delete_download_garbage()
                 retries += 1
-                logger.warning("Retrying {}".format(retries))
-                pass
+                if retries >= 5:
+                    raise
+                else:
+                    logger.warning("Retrying {}".format(retries))
         if not response.type.startswith("video"):
             raise Exception("Video download failed: {}".format(url))
 
