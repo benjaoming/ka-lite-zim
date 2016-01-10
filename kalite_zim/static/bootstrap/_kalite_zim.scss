@@ -7,6 +7,9 @@ $brand-info:            #92ae3b !default;
 $brand-warning:         #f0ad4e !default;
 $brand-danger:          #d9534f !default;
 
+$link-color:            $brand-info;
+
+
 @import "bootstrap";
 
 .header {
@@ -91,5 +94,7 @@ $brand-danger:          #d9534f !default;
 }
 
 
-.video-js {padding-top: 56.25%}
-.vjs-fullscreen {padding-top: 0px}
+// Use this once video.js is upgraded to latest version (which currently does
+// not support Kiwix gecko)
+// .video-js {padding-top: 56.25%}
+// .vjs-fullscreen {padding-top: 0px}

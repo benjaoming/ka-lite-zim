@@ -1,0 +1,59 @@
+{% extends "kalite_zim/welcome.html" %}
+{% load i18n %}
+{% block title %}{% trans "About" %}{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+  
+    <h1>{% trans "About this project" %}</h1>
+    
+    <p>
+      Khan Academy can be visited on <a href="http://www.khanacademy.org">www.khanacademy.org</a>
+      and there you can read much more about how they are publishing free educational materials
+      for the whole world.
+    </p>
+    
+    <p>
+      Meanwhile, the distribution of this offline version, has been made possible
+      through data packaged by <a href="http://learningequality.org">Learning Equality</a>,
+      an organization working to promote free online contents such as Khan Academy
+      beyond the reach of internet (broadband) etc.
+    </p>
+    
+    <p>
+      Distribution is done with videos, exercises, and interactive tools for
+      teachers and students through the <strong>KA Lite</strong> project, soon
+      to be re-branded <strong>Kolibri</strong>.
+    </p>
+    
+    <p>
+      The reason why it has been created as a .zim file, was through a hackathon
+      in Berlin, Jan. 2016, in which Kiwix and Learning Equality people came
+      together. We want to see that the people distributing offline contents
+      collaborate on common standards and platforms, and as such we are happy
+      that data from one offline application (KA Lite) is able to ender the
+      realm of other applications throught the
+      <a href="http://www.openzim.org">OpenZim</a> format.
+    </p>
+    
+    <p>
+      In the future, we hope to see many more platforms both read and write
+      the OpenZim format, and that other projects will generate more APIs and
+      extensions for this purpose.
+    </p>
+    
+    <p>
+      More over, we encourage developers to join aboard a growing movement of
+      content liberators who seek not only to provide free and wonderful
+      privileges of education to those with fast internet access, but also to
+      those without!
+    </p>
+    
+    <p>
+      <em>Berlin, January 10th 2016</em>
+    </p>
+  
+  </div>
+</div>
+{% endblock %}
+

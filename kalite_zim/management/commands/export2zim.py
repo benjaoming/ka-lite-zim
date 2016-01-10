@@ -269,10 +269,10 @@ class Command(BaseCommand):
                             "-codec:v", "libvpx",
                             "-quality", "best",
                             "-cpu-used", "0",
-                            "-b:v", "300k",
+                            "-b:v", "500k",
                             "-qmin", "30",
                             "-qmax", "42",
-                            "-maxrate", "300k",
+                            "-maxrate", "500k",
                             "-bufsize", "1000k",
                             "-threads", "8",
                             "-vf", "scale=480:-1",
@@ -415,11 +415,14 @@ class Command(BaseCommand):
 
         with i18n.translate_block(language):
             welcome_html = render_to_string("kalite_zim/welcome.html", template_context)
+            about_html = render_to_string("kalite_zim/about.html", template_context)
         # Replace absolute references to '/static' with relative
         welcome_html = welcome_html.replace("/static", "static")
+        about_html = about_html.replace("/static", "static")
 
         # Write the welcome.html file
         open(os.path.join(tmp_dir, 'welcome.html'), 'w').write(welcome_html)
+        open(os.path.join(tmp_dir, 'about.html'), 'w').write(about_html)
 
         # Render all topic html files
         render_topic_pages(topic_tree)

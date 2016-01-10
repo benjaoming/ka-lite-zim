@@ -40,9 +40,9 @@
 {% if topic.video_url %}
   
   {% get_current_language as LANGUAGE_CODE %}
-
-  <video id="levideo" class="video-js"
-  poster="{{ topic.thumbnail_url }}" data-setup='{"controls": true, "autoplay": true, "preload": true, "techOrder": ["html5", "flash"]}' style="width: 100%;">
+  
+  <video id="levideo" class="video-js vjs-default-skin"
+  poster="{{ topic.thumbnail_url }}" controls data-setup='{"autoplay": true, "preload": true, "width": 640, "height": 360}' style="margin: auto;">
     <source src="{{ topic.video_url }}" type='video/{{ topic.content.format }}'>
     <p class="vjs-no-js">
       To view this video please enable JavaScript, and consider upgrading to a web browser that
