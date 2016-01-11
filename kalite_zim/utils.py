@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import logging
 import os
+import time
 import urllib
 
 from colorlog import ColoredFormatter
@@ -47,17 +48,12 @@ def download_video(youtube_id, video_format, dest_dir):
             os.unlink(thumbnail_filename)
 
     try:
-        retries = 0
-        while retries < 5:
-            try:
-                __, response = urllib.urlretrieve(url, video_filename)
-            except:
-                delete_download_garbage()
-                retries += 1
-                if retries >= 5:
-                    raise
-                else:
-                    logger.warning("Retrying {}".format(retries))
+        try:
+            __, response = urllib.urlretrieve(url, video_filename)
+        except:
+            delete_download_garbage()
+            logger.warning("Download failed, retrying again in 2 seconds.")
+            time.sleep(2)
         if not response.type.startswith("video"):
             raise Exception("Video download failed: {}".format(url))
 
