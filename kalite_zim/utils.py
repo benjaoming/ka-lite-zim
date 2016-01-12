@@ -57,12 +57,12 @@ def download_video(youtube_id, video_format, dest_dir):
             try:
                 logger.info("Let's try and fetch {}".format(url))
                 __, response = urllib.urlretrieve(url, video_filename)
-                if response.status == '404':
+                if str(response.status) == '404':
                     delete_download_garbage()
                     logger.error("404 for: {}".format(url))
                     return  # Nothing to do
                 if not response.type.startswith("video"):
-                    logger.error("Video download failed with code {}: {}".format(response.status, url))
+                    logger.error("Video download failed with status {}: {}".format(response.status or "None", url))
                     raise DownloadError()
                 break
             except (DownloadError, socket.error, IOError):
