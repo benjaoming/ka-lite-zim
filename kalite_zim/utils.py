@@ -12,6 +12,7 @@ from django.conf import settings
 from fle_utils.videos import get_outside_video_urls
 
 from . import __name__ as base_path
+import socket
 
 base_path = os.path.abspath(base_path)
 
@@ -27,6 +28,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(LOG_LEVEL)
 logger.addHandler(stream)
 logger.propagate = False
+
+
+class DownloadError(Exception):
+    pass
 
 
 def download_video(youtube_id, video_format, dest_dir):
@@ -50,11 +55,17 @@ def download_video(youtube_id, video_format, dest_dir):
     try:
         while True:
             try:
+                logger.info("Let's try and fetch {}".format(url))
                 __, response = urllib.urlretrieve(url, video_filename)
+                if response.status == '404':
+                    delete_download_garbage()
+                    logger.error("404 for: {}".format(url))
+                    return  # Nothing to do
                 if not response.type.startswith("video"):
-                    raise Exception("Video download failed: {}".format(url))
+                    logger.error("Video download failed with code {}: {}".format(response.status, url))
+                    raise DownloadError()
                 break
-            except:
+            except (DownloadError, socket.error, IOError):
                 delete_download_garbage()
                 logger.warning("Download failed, retrying again in 2 seconds.")
                 time.sleep(2)
