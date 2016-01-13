@@ -69,6 +69,7 @@ def download_video(youtube_id, video_format, dest_dir):
             except (DownloadError, socket.error, IOError):
                 delete_download_garbage()
                 logger.warning("Download failed, retrying again in 2 seconds.")
+                logger.error(traceback.format_exc())
                 time.sleep(2)
             except IOError:
                 delete_download_garbage()
