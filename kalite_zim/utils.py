@@ -13,6 +13,7 @@ from fle_utils.videos import get_outside_video_urls
 
 from . import __name__ as base_path
 import socket
+import traceback
 
 base_path = os.path.abspath(base_path)
 
@@ -68,6 +69,11 @@ def download_video(youtube_id, video_format, dest_dir):
             except (DownloadError, socket.error, IOError):
                 delete_download_garbage()
                 logger.warning("Download failed, retrying again in 2 seconds.")
+                time.sleep(2)
+            except IOError:
+                delete_download_garbage()
+                logger.warning("Download failed, IO error, retrying again in 2 seconds.")
+                logger.error(traceback.format_exc())
                 time.sleep(2)
 
         __, response = urllib.urlretrieve(thumb_url, thumbnail_filename)
