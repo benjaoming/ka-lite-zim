@@ -62,7 +62,10 @@ def download_video(youtube_id, video_format, dest_dir):
                     delete_download_garbage()
                     logger.error("404 for: {}".format(url))
                     return  # Nothing to do
-                if not response.type.startswith("video"):
+                if (
+                        not os.path.isfile(video_filename) or
+                        "Content-Length" not in response or
+                        not str(len(open(video_filename, "rb").read())) == response["Content-Length"]):
                     logger.error("Video download failed with status {}: {}".format(response.status or "None", url))
                     raise DownloadError()
                 break
