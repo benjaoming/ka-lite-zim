@@ -274,18 +274,20 @@ class Command(BaseCommand):
                             "-codec:v", "libvpx",
                             "-quality", "best",
                             "-cpu-used", "0",
-                            "-b:v", "500k",
-                            "-qmin", "30",
-                            "-qmax", "42",
-                            "-maxrate", "500k",
-                            "-bufsize", "1000k",
+                            "-b:v", "300k",
+                            "-qmin", "10",  # 10=lowest value
+                            "-qmax", "35",  # 42=highest value
+                            "-maxrate", "300k",
+                            "-bufsize", "600k",
                             "-threads", "8",
-                            "-vf", "scale=480:-1",
+                            # "-vf", "scale=-1",
                             "-codec:a", "libvorbis",
-                            "-b:a", "128k",
+                            # "-b:a", "128k",
+                            "-aq", "5",
                             "-f", "webm",
                         ]
                         ffmpeg_pass1 = ffmpeg_base_args + [
+                            "-an",  # Disables audio, no effect first pass
                             "-pass", "1",
                             "-passlogfile", ffmpeg_pass_log,
                             video_file_dest,
@@ -368,8 +370,8 @@ class Command(BaseCommand):
                 copy_media(child)
                 empty_topic = child["kind"] == "Topic" and not child.get("children", [])
                 unavailable_video = child["kind"] == "Video" and not child.get("content", {}).get("available", False)
-                # if not (empty_topic or unavailable_video):
-                new_children.append(child)
+                if not (empty_topic or unavailable_video):
+                    new_children.append(child)
             node['children'] = new_children
         copy_media.videos_found = 0
 
