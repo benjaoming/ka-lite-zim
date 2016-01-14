@@ -236,6 +236,11 @@ class Command(BaseCommand):
                 # Exercises cannot be displayed
                 node["content"]["available"] = False
             elif node['kind'] == 'Video':
+
+                if node['content']['format'] == "webm":
+                    logger.warning("Found a duplicate ID for {}, re-downloading".format(node['id']))
+                    node['content']['format'] = "mp4"
+
                 # Available is False by default until we locate the file
                 node["content"]["available"] = False
                 node_dir = os.path.join(tmp_dir, node["path"])
@@ -363,8 +368,8 @@ class Command(BaseCommand):
                 copy_media(child)
                 empty_topic = child["kind"] == "Topic" and not child.get("children", [])
                 unavailable_video = child["kind"] == "Video" and not child.get("content", {}).get("available", False)
-                if not (empty_topic or unavailable_video):
-                    new_children.append(child)
+                # if not (empty_topic or unavailable_video):
+                new_children.append(child)
             node['children'] = new_children
         copy_media.videos_found = 0
 
