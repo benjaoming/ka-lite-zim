@@ -144,7 +144,7 @@ class Command(BaseCommand):
                 logger.info("Resuming in dirty tmp directory {}".format(tmp_dir))
             else:
                 raise CommandError(
-                    "{} not empty, use the -c option to clean it or use an empty destination directory.".format(
+                    "{} not empty, use the -c option to clean it, -r to resume, or use an empty destination directory.".format(
                         tmp_dir
                     )
                 )
