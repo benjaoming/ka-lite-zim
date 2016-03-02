@@ -79,6 +79,13 @@ class Command(BaseCommand):
             help='Force clearing temporary fs and output destinations before write'
         ),
         make_option(
+            '--resume', '-r',
+            action='store_true',
+            dest='clear',
+            default=False,
+            help='Resume writing into a dirty tmp-dir'
+        ),
+        make_option(
             '--download', '-d',
             action='store_true',
             dest='download',
@@ -133,6 +140,8 @@ class Command(BaseCommand):
             if options['clear']:
                 logger.info("Clearing directory {}".format(tmp_dir))
                 shutil.rmtree(tmp_dir)
+            elif options['clear']:
+                logger.info("Resuming in dirty tmp directory {}".format(tmp_dir))
             else:
                 raise CommandError(
                     "{} not empty, use the -c option to clean it or use an empty destination directory.".format(
@@ -268,42 +277,45 @@ class Command(BaseCommand):
                             os.unlink(ffmpeg_pass_log)
                         video_file_name = node['id'] + '.webm'
                         video_file_dest = os.path.join(node_dir, video_file_name)
-                        ffmpeg_base_args = [
-                            ffmpeg,
-                            "-i", video_file_src,
-                            "-codec:v", "libvpx",
-                            "-quality", "best",
-                            "-cpu-used", "0",
-                            "-b:v", "300k",
-                            "-qmin", "10",  # 10=lowest value
-                            "-qmax", "35",  # 42=highest value
-                            "-maxrate", "300k",
-                            "-bufsize", "600k",
-                            "-threads", "8",
-                            # "-vf", "scale=-1",
-                            "-codec:a", "libvorbis",
-                            # "-b:a", "128k",
-                            "-aq", "5",
-                            "-f", "webm",
-                        ]
-                        ffmpeg_pass1 = ffmpeg_base_args + [
-                            "-an",  # Disables audio, no effect first pass
-                            "-pass", "1",
-                            "-passlogfile", ffmpeg_pass_log,
-                            video_file_dest,
-                        ]
-                        ffmpeg_pass2 = ffmpeg_base_args + [
-                            "-pass", "2",
-                            "-y", "-passlogfile", ffmpeg_pass_log,
-                            video_file_dest,
-                        ]
-                        for cmd in (ffmpeg_pass1, ffmpeg_pass2):
-                            process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-                            stdout_data, _stderr_data = process.communicate()
-                            if process.returncode != 0:
-                                logger.error("Error invoking ffmpeg: {}".format((_stderr_data or "") + (stdout_data or "")))
-                                logger.error("Command was: {}".format(" ".join(cmd)))
-                                raise CommandError("Could not complete transcoding")
+                        if os.path.isfile(video_file_dest):
+                            logger.info("Already encoded: {}".format(video_file_dest))
+                        else:
+                            ffmpeg_base_args = [
+                                ffmpeg,
+                                "-i", video_file_src,
+                                "-codec:v", "libvpx",
+                                "-quality", "best",
+                                "-cpu-used", "0",
+                                "-b:v", "300k",
+                                "-qmin", "10",  # 10=lowest value
+                                "-qmax", "35",  # 42=highest value
+                                "-maxrate", "300k",
+                                "-bufsize", "600k",
+                                "-threads", "8",
+                                # "-vf", "scale=-1",
+                                "-codec:a", "libvorbis",
+                                # "-b:a", "128k",
+                                "-aq", "5",
+                                "-f", "webm",
+                            ]
+                            ffmpeg_pass1 = ffmpeg_base_args + [
+                                "-an",  # Disables audio, no effect first pass
+                                "-pass", "1",
+                                "-passlogfile", ffmpeg_pass_log,
+                                video_file_dest,
+                            ]
+                            ffmpeg_pass2 = ffmpeg_base_args + [
+                                "-pass", "2",
+                                "-y", "-passlogfile", ffmpeg_pass_log,
+                                video_file_dest,
+                            ]
+                            for cmd in (ffmpeg_pass1, ffmpeg_pass2):
+                                process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                                stdout_data, _stderr_data = process.communicate()
+                                if process.returncode != 0:
+                                    logger.error("Error invoking ffmpeg: {}".format((_stderr_data or "") + (stdout_data or "")))
+                                    logger.error("Command was: {}".format(" ".join(cmd)))
+                                    raise CommandError("Could not complete transcoding")
                         node['content']['format'] = "webm"
                     else:
                         # If not transcoding, just link the original file
