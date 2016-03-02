@@ -81,7 +81,7 @@ class Command(BaseCommand):
         make_option(
             '--resume', '-r',
             action='store_true',
-            dest='clear',
+            dest='resume',
             default=False,
             help='Resume writing into a dirty tmp-dir'
         ),
@@ -140,7 +140,7 @@ class Command(BaseCommand):
             if options['clear']:
                 logger.info("Clearing directory {}".format(tmp_dir))
                 shutil.rmtree(tmp_dir)
-            elif options['clear']:
+            elif options['resume']:
                 logger.info("Resuming in dirty tmp directory {}".format(tmp_dir))
             else:
                 raise CommandError(
