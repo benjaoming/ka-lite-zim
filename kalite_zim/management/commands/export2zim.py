@@ -343,7 +343,8 @@ class Command(BaseCommand):
                             node["path"],
                             node['id'] + '.png'
                         )
-                        os.link(thumb_file_src, thumb_file_dest)
+                        if not os.path.exists(thumb_file_dest):
+                            os.link(thumb_file_src, thumb_file_dest)
                     else:
                         node["thumbnail_url"] = None
 
